@@ -12,6 +12,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +47,11 @@ class CarController {
      *
      * @return list of vehicles
      */
+    @Operation(summary = "Retrieve all Vehicles")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Found all Vehicles"
+    )
     @GetMapping
     CollectionModel<EntityModel<Car>> list() {
         List<EntityModel<Car>> resources = carService.list().stream().map(assembler::toModel)
@@ -58,6 +66,19 @@ class CarController {
      * @param id the id number of the given vehicle
      * @return all information for the requested vehicle
      */
+    @Operation(
+            summary = "Retrieve a Vehicle",
+            description = "This feature retrieves the Vehicle data from the database and access the Pricing Service " +
+                    "and Boogle Maps to enrich the Vehicle information to be presented")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Found the Vehicle"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Vehicle not found",
+            content = @Content
+    )
     @GetMapping("/{id}")
     EntityModel<Car> get(@PathVariable Long id) {
         var car = carService.findById(id);
@@ -71,8 +92,13 @@ class CarController {
      * @return response that the new vehicle was added to the system
      * @throws URISyntaxException if the request contains invalid fields or syntax
      */
+    @Operation(summary = "Create a Vehicle")
+    @ApiResponse(
+            responseCode = "201",
+            description = "Created new Vehicle resource"
+    )
     @PostMapping
-    ResponseEntity<?> post(@Valid @RequestBody Car car) throws URISyntaxException {
+    ResponseEntity<EntityModel<Car>> post(@Valid @RequestBody Car car) throws URISyntaxException {
         var savedCar = carService.save(car);
         var model = assembler.toModel(savedCar);
         return ResponseEntity.created(new URI(model.getRequiredLink("self").getHref())).body(model);
@@ -85,8 +111,18 @@ class CarController {
      * @param car The updated information about the related vehicle.
      * @return response that the vehicle was updated in the system
      */
+    @Operation(summary = "Update a Vehicle")
+    @ApiResponse(
+            responseCode = "200",
+            description = "Updated the Vehicle"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Vehicle not found",
+            content = @Content
+    )
     @PutMapping("/{id}")
-    ResponseEntity<?> put(@PathVariable Long id, @Valid @RequestBody Car car) {
+    ResponseEntity<EntityModel<Car>> put(@PathVariable Long id, @Valid @RequestBody Car car) {
         car.setId(id);
         var savedCar = carService.save(car);
         EntityModel<Car> resource = assembler.toModel(savedCar);
@@ -99,6 +135,17 @@ class CarController {
      * @param id The ID number of the vehicle to remove.
      * @return response that the related vehicle is no longer in the system
      */
+    @Operation(summary = "Delete a Vehicle")
+    @ApiResponse(
+            responseCode = "204",
+            description = "Deleted the Vehicle"
+    )
+    @ApiResponse(
+            responseCode = "404",
+            description = "Vehicle not found",
+            content = @Content
+    )
+
     @DeleteMapping("/{id}")
     ResponseEntity<?> delete(@PathVariable Long id) {
         carService.delete(id);
