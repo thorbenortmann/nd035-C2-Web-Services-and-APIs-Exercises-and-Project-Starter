@@ -86,6 +86,25 @@ public class CarControllerTest {
     }
 
     /**
+     * Test for successful update of a car in the system.
+     * @throws Exception if the car to be updated is not already present in the system
+     */
+    @Test
+    public void updateCar() throws Exception {
+        var car = getCar();
+        car.setCondition(Condition.NEW);
+
+        mvc.perform(
+                put(new URI(String.format("/cars/%d", testCarId)))
+                        .content(json.write(car).getJson())
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .accept(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk());
+
+        verify(carService).save(notNull());
+    }
+
+    /**
      * Tests if the read operation appropriately returns a list of vehicles.
      *
      * @throws Exception if the read operation of the vehicle list fails
