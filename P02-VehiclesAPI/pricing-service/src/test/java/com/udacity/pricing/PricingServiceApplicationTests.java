@@ -1,6 +1,6 @@
 package com.udacity.pricing;
 
-import com.udacity.pricing.domain.price.Price;
+import com.udacity.pricing.domain.Price;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
