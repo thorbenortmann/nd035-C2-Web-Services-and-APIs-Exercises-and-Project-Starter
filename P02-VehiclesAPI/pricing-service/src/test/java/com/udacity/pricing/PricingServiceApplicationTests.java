@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -36,6 +37,7 @@ public class PricingServiceApplicationTests {
 
 		// Assert
 		assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
+		assertThat(response.getBody(), notNullValue());
 	}
 
 }
