@@ -80,26 +80,33 @@ public class CarControllerTest {
                         .content(json.write(car).getJson())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(testCarId))
+                .andExpect(jsonPath("$.condition").value(Condition.USED.toString()));
 
         verify(carService).save(notNull());
     }
 
     /**
      * Test for successful update of a car in the system.
+     *
      * @throws Exception if the car to be updated is not already present in the system
      */
     @Test
     public void updateCar() throws Exception {
         var car = getCar();
+        car.setId(testCarId);
         car.setCondition(Condition.NEW);
+        given(carService.save(any())).willReturn(car);
 
         mvc.perform(
                 put(new URI(String.format("/cars/%d", testCarId)))
                         .content(json.write(car).getJson())
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .accept(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(testCarId))
+                .andExpect(jsonPath("$.condition").value(Condition.NEW.toString()));;
 
         verify(carService).save(notNull());
     }
